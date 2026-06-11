@@ -1,0 +1,11 @@
+# Binarios compilados
+/bin/
+*.exe
+
+# Variables de entorno / secrets
+.env
+.env.local
+
+# Carpeta de Supabase local (data temporal)
+.branches
+.temp

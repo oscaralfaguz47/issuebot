@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/MicahParks/keyfunc/v3"
 	"github.com/go-chi/chi/v5"
 
 	httpadapter "github.com/oscaralfaguz47/issuebot/internal/adapter/http"
@@ -30,6 +31,15 @@ func main() {
 	}
 	defer pool.Close()
 
+	jwksURL := os.Getenv("SUPABASE_JWKS_URL")
+	if jwksURL == "" {
+		log.Fatal("falta SUPABASE_JWKS_URL")
+	}
+	jwks, err := keyfunc.NewDefaultCtx(ctx, []string{jwksURL})
+	if err != nil {
+		log.Fatal("no pude cargar el JWKS:", err)
+	}
+
 	// Wiring: ACÁ está el cambio. Postgres en vez de memoria.
 	repo := postgres.NewProjectRepo(pool)
 	createProject := usecase.NewCreateProjectUseCase(repo)
@@ -38,7 +48,7 @@ func main() {
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
 	})
-	r.Post("/projects", httpadapter.HandleCreateProject(createProject))
+	r.Method("POST", "/projects", httpadapter.RequireAuth(jwks, httpadapter.HandleCreateProject(createProject)))
 
 	log.Println("server en :8080")
 	http.ListenAndServe(":8080", r)

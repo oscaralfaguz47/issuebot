@@ -20,3 +20,7 @@ func (r *ProjectRepo) Save(ctx context.Context, project domain.Project) error {
 	r.data[project.ID] = project
 	return nil
 }
+
+func (r *ProjectRepo) Count() int {
+	return len(r.data)
+}

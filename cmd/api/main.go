@@ -21,13 +21,13 @@ func main() {
 	// Leo el DSN de la variable de entorno (nunca hardcodeado)
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		log.Fatal("falta DATABASE_URL")
+		log.Fatal("Missing DATABASE_URL")
 	}
 
 	// Abro el pool de conexiones
 	pool, err := platform.NewDBPool(ctx, dsn)
 	if err != nil {
-		log.Fatal("no pude conectar a la DB:", err)
+		log.Fatal("It was not possible to connect to the DB:", err)
 	}
 	defer pool.Close()
 
@@ -37,7 +37,7 @@ func main() {
 	}
 	jwks, err := keyfunc.NewDefaultCtx(ctx, []string{jwksURL})
 	if err != nil {
-		log.Fatal("no pude cargar el JWKS:", err)
+		log.Fatal("It was not possible to load the JWKS:", err)
 	}
 
 	// Wiring: ACÁ está el cambio. Postgres en vez de memoria.

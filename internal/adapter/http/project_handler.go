@@ -26,6 +26,6 @@ func HandleCreateProject(uc *usecase.CreateProjectUseCase) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusCreated)
-		fmt.Fprint(w, "Creado")
+		fmt.Fprint(w, "Project created successfully")
 	}
 }

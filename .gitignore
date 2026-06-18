@@ -5,6 +5,7 @@
 # Variables de entorno / secrets
 .env
 .env.local
+secrets/
 
 # Carpeta de Supabase local (data temporal)
 .branches

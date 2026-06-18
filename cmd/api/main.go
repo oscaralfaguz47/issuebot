@@ -8,6 +8,7 @@ import (
 
 	"github.com/MicahParks/keyfunc/v3"
 	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 
 	httpadapter "github.com/oscaralfaguz47/issuebot/internal/adapter/http"
 	"github.com/oscaralfaguz47/issuebot/internal/adapter/postgres"
@@ -17,6 +18,10 @@ import (
 
 func main() {
 	ctx := context.Background()
+
+	if err := godotenv.Load(); err != nil {
+		log.Println("The .env file was not found, using environment variables")
+	}
 
 	// Leo el DSN de la variable de entorno (nunca hardcodeado)
 	dsn := os.Getenv("DATABASE_URL")
@@ -33,7 +38,7 @@ func main() {
 
 	jwksURL := os.Getenv("SUPABASE_JWKS_URL")
 	if jwksURL == "" {
-		log.Fatal("falta SUPABASE_JWKS_URL")
+		log.Fatal("Missing SUPABASE_JWKS_URL")
 	}
 	jwks, err := keyfunc.NewDefaultCtx(ctx, []string{jwksURL})
 	if err != nil {

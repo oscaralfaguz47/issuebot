@@ -23,12 +23,16 @@ func main() {
 		log.Println("The .env file was not found, using environment variables")
 	}
 
-	// Leo el DSN de la variable de entorno (nunca hardcodeado)
+	// Read the DSN from the environment variable (never hardcoded)
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
 		log.Fatal("Missing DATABASE_URL")
 	}
-
+	// Read the GitHub webhook secret from environment variable
+	webhookSecret := os.Getenv("GITHUB_WEBHOOK_SECRET")
+	if webhookSecret == "" {
+		log.Fatal("Missing GITHUB_WEBHOOK_SECRET")
+	}
 	// Abro el pool de conexiones
 	pool, err := platform.NewDBPool(ctx, dsn)
 	if err != nil {
@@ -49,11 +53,17 @@ func main() {
 	repo := postgres.NewProjectRepo(pool)
 	createProject := usecase.NewCreateProjectUseCase(repo)
 
+	//jobRepo := postgres.NewJobRepo(pool)
+	//enqueueJob := usecase.NewEnqueueJobUseCase(jobRepo)
+
 	r := chi.NewRouter()
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
 	})
+	// Protected endpoints require authentication
 	r.Method("POST", "/projects", httpadapter.RequireAuth(jwks, httpadapter.HandleCreateProject(createProject)))
+	// Webhook endpoint for GitHub events
+	r.Post("/webhooks/github", httpadapter.HandleGitHubWebhook(webhookSecret))
 
 	log.Println("server en :8080")
 	http.ListenAndServe(":8080", r)

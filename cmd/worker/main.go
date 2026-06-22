@@ -94,8 +94,7 @@ func main() {
 		// post it to GitHub
 		err = ghClient.PostComment(ctx, p.Installation.ID, p.Repository.Owner.Login, p.Repository.Name, p.Issue.Number, comment)
 		if err != nil {
-			log.Printf("job %s: GitHub post error (retriable): %v", job.ID, err)
-			jobRepo.Reschedule(ctx, job.ID)
+			handleRetriable(ctx, jobRepo, job, "GitHub post error")
 			continue
 		}
 
@@ -105,4 +104,16 @@ func main() {
 		}
 		log.Printf("job done: id=%s, commented on %s/%s#%d", job.ID, p.Repository.Owner.Login, p.Repository.Name, p.Issue.Number)
 	}
+}
+
+const maxAttempts = 3
+
+func handleRetriable(ctx context.Context, jobRepo *postgres.JobRepo, job *domain.Job, reason string) {
+	if job.Attempts+1 >= maxAttempts {
+		log.Printf("job %s: %s — giving up after %d attempts (terminal)", job.ID, reason, job.Attempts+1)
+		jobRepo.MarkFailed(ctx, job.ID)
+		return
+	}
+	log.Printf("job %s: %s — rescheduling (attempt %d)", job.ID, reason, job.Attempts+1)
+	jobRepo.Reschedule(ctx, job.ID)
 }

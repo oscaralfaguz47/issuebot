@@ -50,11 +50,11 @@ func main() {
 	}
 
 	// Wiring: ACÁ está el cambio. Postgres en vez de memoria.
-	repo := postgres.NewProjectRepo(pool)
-	createProject := usecase.NewCreateProjectUseCase(repo)
+	projectRepo := postgres.NewProjectRepo(pool)
+	createProject := usecase.NewCreateProjectUseCase(projectRepo)
 
-	//jobRepo := postgres.NewJobRepo(pool)
-	//enqueueJob := usecase.NewEnqueueJobUseCase(jobRepo)
+	jobRepo := postgres.NewJobRepo(pool)
+	enqueueJob := usecase.NewEnqueueJobUseCase(jobRepo)
 
 	r := chi.NewRouter()
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +63,7 @@ func main() {
 	// Protected endpoints require authentication
 	r.Method("POST", "/projects", httpadapter.RequireAuth(jwks, httpadapter.HandleCreateProject(createProject)))
 	// Webhook endpoint for GitHub events
-	r.Post("/webhooks/github", httpadapter.HandleGitHubWebhook(webhookSecret))
+	r.Post("/webhooks/github", httpadapter.HandleGitHubWebhook(webhookSecret, projectRepo, enqueueJob))
 
 	log.Println("server en :8080")
 	http.ListenAndServe(":8080", r)

@@ -2,8 +2,11 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"time"
 )
+
+var ErrProjectNotFound = errors.New("project not found")
 
 type Project struct {
 	ID                   string
@@ -16,4 +19,5 @@ type Project struct {
 
 type ProjectRepository interface {
 	Save(ctx context.Context, project Project) error
+	FindByInstallationID(ctx context.Context, installationID string) (*Project, error)
 }

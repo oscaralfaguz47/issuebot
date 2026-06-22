@@ -2,8 +2,11 @@ package domain
 
 import (
 	"context"
+	"errors"
 	"time"
 )
+
+var ErrNoJobs = errors.New("no pending jobs")
 
 type Job struct {
 	ID             string

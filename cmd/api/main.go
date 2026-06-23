@@ -51,7 +51,8 @@ func main() {
 
 	// Wiring: ACÁ está el cambio. Postgres en vez de memoria.
 	projectRepo := postgres.NewProjectRepo(pool)
-	createProject := usecase.NewCreateProjectUseCase(projectRepo)
+	membershipRepo := postgres.NewMembershipRepo(pool)
+	createProject := usecase.NewCreateProjectUseCase(projectRepo, membershipRepo)
 
 	jobRepo := postgres.NewJobRepo(pool)
 	enqueueJob := usecase.NewEnqueueJobUseCase(jobRepo)

@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -20,8 +21,18 @@ func HandleCreateProject(uc *usecase.CreateProjectUseCase) http.HandlerFunc {
 			return
 		}
 
-		if err := uc.Execute(r.Context(), input.OrgID, input.Name); err != nil {
-			http.Error(w, "...", http.StatusInternalServerError)
+		userID, ok := UserIDFromContext(r.Context())
+		if !ok {
+			http.Error(w, "no user in context", http.StatusUnauthorized)
+			return
+		}
+
+		if err := uc.Execute(r.Context(), userID, input.OrgID, input.Name); err != nil {
+			if errors.Is(err, usecase.ErrForbidden) {
+				http.Error(w, "forbidden", http.StatusForbidden)
+				return
+			}
+			http.Error(w, "error", http.StatusInternalServerError)
 			return
 		}
 

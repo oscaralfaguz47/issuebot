@@ -20,4 +20,5 @@ type Project struct {
 type ProjectRepository interface {
 	Save(ctx context.Context, project Project) error
 	FindByInstallationID(ctx context.Context, installationID string) (*Project, error)
+	ListByUser(ctx context.Context, userID string) ([]Project, error)
 }

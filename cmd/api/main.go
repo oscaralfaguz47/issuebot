@@ -8,6 +8,7 @@ import (
 
 	"github.com/MicahParks/keyfunc/v3"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
 
 	httpadapter "github.com/oscaralfaguz47/issuebot/internal/adapter/http"
@@ -58,11 +59,18 @@ func main() {
 	enqueueJob := usecase.NewEnqueueJobUseCase(jobRepo)
 
 	r := chi.NewRouter()
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+		AllowCredentials: true,
+	}))
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
 	})
 	// Protected endpoints require authentication
 	r.Method("POST", "/projects", httpadapter.RequireAuth(jwks, httpadapter.HandleCreateProject(createProject)))
+	r.Method("GET", "/projects", httpadapter.RequireAuth(jwks, httpadapter.HandleListProjects(projectRepo)))
 	// Webhook endpoint for GitHub events
 	r.Post("/webhooks/github", httpadapter.HandleGitHubWebhook(webhookSecret, projectRepo, enqueueJob))
 

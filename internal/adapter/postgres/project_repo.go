@@ -45,3 +45,25 @@ func (r *ProjectRepo) FindByInstallationID(ctx context.Context, installationID s
 	}
 	return &p, nil
 }
+
+func (r *ProjectRepo) ListByUser(ctx context.Context, userID string) ([]domain.Project, error) {
+	query := `select p.id, p.org_id, p.name, p.github_repo, p.github_installation_id, p.created_at
+from projects p
+join memberships m on m.org_id = p.org_id
+where m.user_id = $1`
+	rows, err := r.pool.Query(ctx, query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var projects []domain.Project
+	for rows.Next() {
+		var p domain.Project
+		if err := rows.Scan(&p.ID, &p.OrgID, &p.Name, &p.GitHubRepo, &p.GitHubInstallationID, &p.CreatedAt); err != nil {
+			return nil, err
+		}
+		projects = append(projects, p)
+	}
+	return projects, rows.Err()
+}

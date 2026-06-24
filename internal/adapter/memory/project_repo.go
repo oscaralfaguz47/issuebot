@@ -33,3 +33,11 @@ func (r *ProjectRepo) FindByInstallationID(ctx context.Context, installationID s
 	}
 	return nil, domain.ErrProjectNotFound
 }
+
+func (r *ProjectRepo) ListByUser(ctx context.Context, userID string) ([]domain.Project, error) {
+	var projects []domain.Project
+	for _, p := range r.data {
+		projects = append(projects, p)
+	}
+	return projects, nil
+}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/oscaralfaguz47/issuebot/internal/domain"
 	"github.com/oscaralfaguz47/issuebot/internal/usecase"
 )
 
@@ -38,5 +39,24 @@ func HandleCreateProject(uc *usecase.CreateProjectUseCase) http.HandlerFunc {
 
 		w.WriteHeader(http.StatusCreated)
 		fmt.Fprint(w, "Project created successfully")
+	}
+}
+
+func HandleListProjects(repo domain.ProjectRepository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userID, ok := UserIDFromContext(r.Context())
+		if !ok {
+			http.Error(w, "no user in context", http.StatusUnauthorized)
+			return
+		}
+
+		projects, err := repo.ListByUser(r.Context(), userID)
+		if err != nil {
+			http.Error(w, "could not list projects", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(projects)
 	}
 }

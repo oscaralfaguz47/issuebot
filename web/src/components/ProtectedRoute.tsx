@@ -1,18 +1,9 @@
-import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { supabase } from "../lib/supabase";
-import type { Session } from "@supabase/supabase-js";
+import { useAuthStore } from "../store/authStore";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setLoading(false);
-    });
-  }, []);
+  const session = useAuthStore((s) => s.session);
+  const loading = useAuthStore((s) => s.loading);
 
   if (loading) {
     return <p>Loading...</p>;

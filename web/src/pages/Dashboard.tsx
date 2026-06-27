@@ -42,7 +42,7 @@ const handleCreate = async () => {
       <h2>Your projects ({projects.length})</h2>
       <ul>
         {projects.map((p) => (
-          <li key={p.ID}>{p.Name}</li>
+          <li key={p.id}>{p.name}</li>
         ))}
       </ul>
       {canCreate && (

@@ -9,12 +9,12 @@ import (
 var ErrProjectNotFound = errors.New("project not found")
 
 type Project struct {
-	ID                   string
-	OrgID                string
-	Name                 string
-	GitHubRepo           string
-	GitHubInstallationID string
-	CreatedAt            time.Time
+	ID                   string    `json:"id"`
+	OrgID                string    `json:"org_id"`
+	Name                 string    `json:"name"`
+	GitHubRepo           string    `json:"github_repo"`
+	GitHubInstallationID string    `json:"github_installation_id"`
+	CreatedAt            time.Time `json:"created_at"`
 }
 
 type ProjectRepository interface {

@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { supabase } from "./lib/supabase";
 import { useAuthStore } from "./store/authStore";
+import Jobs from "./pages/Jobs";
 
 function App() {
   const setSession = useAuthStore((s) => s.setSession);
@@ -14,7 +15,7 @@ function App() {
     // 1. cargar la sesión actual al arrancar
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
-      setLoading(false); 
+      setLoading(false);
     });
 
     // 2. escuchar cambios de sesión (login, logout, refresh)
@@ -35,6 +36,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/jobs"
+          element={
+            <ProtectedRoute>
+              <Jobs />
             </ProtectedRoute>
           }
         />

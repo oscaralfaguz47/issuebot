@@ -71,6 +71,7 @@ func main() {
 	// Protected endpoints require authentication
 	r.Method("POST", "/projects", httpadapter.RequireAuth(jwks, httpadapter.HandleCreateProject(createProject)))
 	r.Method("GET", "/projects", httpadapter.RequireAuth(jwks, httpadapter.HandleListProjects(projectRepo)))
+	r.Method("GET", "/me", httpadapter.RequireAuth(jwks, httpadapter.HandleMe(membershipRepo)))
 	// Webhook endpoint for GitHub events
 	r.Post("/webhooks/github", httpadapter.HandleGitHubWebhook(webhookSecret, projectRepo, enqueueJob))
 

@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 
-function ProtectedRoute() {
+function GuestRoute() {
   const session = useAuthStore((s) => s.session);
   const loading = useAuthStore((s) => s.loading);
 
@@ -9,11 +9,11 @@ function ProtectedRoute() {
     return <p>Loading...</p>;
   }
 
-  if (!session) {
-    return <Navigate to="/login" replace />;
+  if (session) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;
 }
 
-export default ProtectedRoute;
+export default GuestRoute;

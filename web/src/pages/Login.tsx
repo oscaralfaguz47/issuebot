@@ -15,14 +15,14 @@ const handleLogin = async () => {
     return;
   }
   console.log("logged in:", data.session?.user.id);
-  navigate("/");
+  navigate("/dashboard");
 };
 
   return (
     <div>
       <h1>IssueBot</h1>
-      <p>Iniciá sesión para continuar</p>
-      <button onClick={handleLogin}>Login con GitHub</button>
+      <p>Login to continue</p>
+      <button onClick={handleLogin}>Login</button>
     </div>
   );
 }

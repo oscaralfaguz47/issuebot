@@ -17,5 +17,5 @@ export const useAuthStore = create<AuthState>((set) => ({
   memberships: [],
   setSession: (session) => set({ session }),
   setLoading: (loading) => set({ loading }),
-  setMemberships: (memberships) => set({ memberships }),
+  setMemberships: (memberships) => set({ memberships })
 }));

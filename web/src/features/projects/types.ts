@@ -6,9 +6,3 @@ export interface Project {
   github_installation_id: string;
   created_at: string;
 }
-
-export interface Membership {
-  org_id: string;
-  user_id: string;
-  role: string;
-}

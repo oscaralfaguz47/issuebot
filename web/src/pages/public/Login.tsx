@@ -1,5 +1,6 @@
-import { supabase } from "../lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/routes"
 
 function Login() {
 
@@ -15,14 +16,14 @@ const handleLogin = async () => {
     return;
   }
   console.log("logged in:", data.session?.user.id);
-  navigate("/");
+  navigate(ROUTES.DASHBOARD);
 };
 
   return (
     <div>
       <h1>IssueBot</h1>
-      <p>Iniciá sesión para continuar</p>
-      <button onClick={handleLogin}>Login con GitHub</button>
+      <p>Login to continue</p>
+      <button onClick={handleLogin}>Login</button>
     </div>
   );
 }

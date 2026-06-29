@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import Toggle from "./Toggle";
+import { Toggle } from "@/features/theme";
 
 function AppLayout() {
   return (

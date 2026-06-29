@@ -1,4 +1,4 @@
-import { useThemeStore } from "../store/themeStore";
+import { useThemeStore } from "@/features/theme/store/themeStore";
 
 function Toggle() {
   // 1. HOOKS arriba: leer stores, useState, useEffect

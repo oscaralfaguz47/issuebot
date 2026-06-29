@@ -1,5 +1,6 @@
-import { supabase } from "../lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/routes"
 
 function Login() {
 
@@ -15,7 +16,7 @@ const handleLogin = async () => {
     return;
   }
   console.log("logged in:", data.session?.user.id);
-  navigate("/dashboard");
+  navigate(ROUTES.DASHBOARD);
 };
 
   return (

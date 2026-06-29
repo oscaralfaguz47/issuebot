@@ -1,18 +1,25 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { supabase } from "./lib/supabase";
-import { useAuthStore } from "./store/authStore";
-import Jobs from "./pages/Jobs";
-import { getMemberships } from "./lib/api";
-import AppLayout from "./components/AppLayout";
-import { useThemeStore } from "./store/themeStore";
-import Landing from "./pages/Landing";
-import RootLayout from "./components/RootLayout";
-import GuestRoute from "./components/GuestRoute";
-import NotFound from "./pages/NotFound";
+import { supabase } from "@/lib/supabase";
+import { useAuthStore, ProtectedRoute, GuestRoute, getMemberships } from "@/features/auth";
+import AppLayout from "@/components/AppLayout";
+import RootLayout from "@/components/RootLayout";
+import { useThemeStore } from "@/features/theme";
+import { ROUTES } from "@/routes"
+
+import { lazy, Suspense } from "react";
+import LoadingScreen from "./components/LoadingScreen";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
+const Dashboard = lazy(() => import("@/pages/app/Dashboard"));
+const Jobs = lazy(() => import("@/pages/app/Jobs"));
+const Landing = lazy(() => import("@/pages/public/Landing"));
+const Login = lazy(() => import("@/pages/public/Login"));
+const NotFound = lazy(() => import("@/pages/public/NotFound"));
+
+const queryClient = new QueryClient();
 
 function App() {
   const setSession = useAuthStore((s) => s.setSession);
@@ -47,24 +54,29 @@ function App() {
   }, [theme]);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<RootLayout />}>
-          <Route path="/" element={<Landing />} />
-          <Route element={<GuestRoute />}>
-            <Route path="/login" element={<Login />} />
-          </Route>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Suspense fallback={<LoadingScreen />}>
+          <Routes>
+            <Route element={<RootLayout />}>
+              <Route path={ROUTES.LANDING} element={<Landing />} />
+              <Route element={<GuestRoute />}>
+                <Route path={ROUTES.LOGIN} element={<Login />} />
+              </Route>
 
-          <Route element={<ProtectedRoute />}>      {/* responsability: protect */}
-            <Route element={<AppLayout />}>            {/* responsability: visual shell */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/jobs" element={<Jobs />} />
+              <Route element={<ProtectedRoute />}>      {/* responsability: protect */}
+                <Route element={<AppLayout />}>            {/* responsability: visual shell */}
+                  <Route path={ROUTES.DASHBOARD} element={<Dashboard />} />
+                  <Route path={ROUTES.JOBS} element={<Jobs />} />
+                </Route>
+              </Route>
+              <Route path={ROUTES.NOTFOUND} element={<NotFound />} />
             </Route>
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 
